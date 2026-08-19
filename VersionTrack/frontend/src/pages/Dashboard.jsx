@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { Plus, Search, FileText, User, Users, Calendar, ArrowRight, Shield } from 'lucide-react';
+import { Plus, Search, FileText, User, Calendar, ArrowRight } from 'lucide-react';
 
 const Dashboard = () => {
   const [documents, setDocuments] = useState([]);
@@ -14,11 +14,7 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
-  const fetchDocuments = async () => {
+  async function fetchDocuments() {
     try {
       setLoading(true);
       const res = await api.get('/documents');
@@ -28,7 +24,11 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
 
   const handleSearch = async (e) => {
     const query = e.target.value;
@@ -140,8 +140,6 @@ const Dashboard = () => {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {documents.map((doc) => {
-            // Determine role representation
-            const isOwner = doc.owner?._id === doc.owner?._id; // placeholder, will verify role dynamically
             return (
               <div
                 key={doc._id}

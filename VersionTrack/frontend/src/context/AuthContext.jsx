@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../utils/api';
 
 const AuthContext = createContext(null);
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
           // Verify with backend
           const res = await api.get('/auth/me');
           setUser(res.data);
-        } catch (error) {
+        } catch {
           console.error('Session expired or token invalid');
           logout();
         }
@@ -69,12 +69,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
-  };
+  }
 
   return (
     <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>

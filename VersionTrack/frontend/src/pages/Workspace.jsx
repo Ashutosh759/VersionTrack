@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import {
   FileText, History, Activity, GitCompare, Users, Save, Shield, Edit3,
-  CheckCircle, RefreshCw, X, UserMinus, UserPlus, AlertCircle, ArrowLeft,
-  ChevronRight, Calendar, ArrowLeftRight
+  RefreshCw, X, UserMinus, UserPlus, AlertCircle, ArrowLeft, Calendar, ArrowLeftRight
 } from 'lucide-react';
 import DiffViewer from '../components/DiffViewer';
 
@@ -99,7 +98,7 @@ const Workspace = () => {
   }, [documentId]);
 
   // Fetch document details
-  const fetchDocument = async () => {
+  async function fetchDocument() {
     try {
       setLoading(true);
       setError('');
@@ -111,7 +110,7 @@ const Workspace = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   // 2. Real-time typing sync
   const handleContentChange = (e) => {
@@ -314,7 +313,6 @@ const Workspace = () => {
   useEffect(() => {
     if (activeTab === 'timeline') {
       fetchVersions();
-      setSelectedVersions([]);
     } else if (activeTab === 'activity') {
       fetchActivities();
     }
