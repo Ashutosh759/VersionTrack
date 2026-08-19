@@ -14,9 +14,6 @@ const activityRoutes = require('./routes/activityRoutes');
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
 // Middleware
@@ -51,23 +48,24 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Create Server
-const server = http.createServer(app);
+if (require.main === module) {
+  connectDB();
 
-// Mount Socket.IO
-const io = socketio(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  },
-});
+  const server = http.createServer(app);
+  const io = socketio(server, {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    },
+  });
 
-// Setup collaboration socket logic
-const setupCollaboration = require('./sockets/collaboration');
-setupCollaboration(io);
+  const setupCollaboration = require('./sockets/collaboration');
+  setupCollaboration(io);
 
-const PORT = process.env.PORT || 5001;
+  const PORT = process.env.PORT || 5001;
+  server.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
 
-server.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
+module.exports = app;

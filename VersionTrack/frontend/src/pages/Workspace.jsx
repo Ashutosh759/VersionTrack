@@ -57,8 +57,11 @@ const Workspace = () => {
   useEffect(() => {
     fetchDocument();
 
-    // Initialize socket connection
-    socketRef.current = io('http://localhost:5001');
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    if (!socketUrl) return undefined;
+
+    // Initialize socket connection when a persistent backend is configured.
+    socketRef.current = io(socketUrl);
 
     // Join room
     socketRef.current.emit('join-document', {
@@ -121,7 +124,7 @@ const Workspace = () => {
     setDoc((prev) => (prev ? { ...prev, content } : null));
 
     // Emit live changes
-    socketRef.current.emit('edit-document', {
+    socketRef.current?.emit('edit-document', {
       documentId,
       content,
       senderId: user._id,
@@ -130,14 +133,14 @@ const Workspace = () => {
     // Trigger typing event with debounce
     if (!isTyping) {
       setIsTyping(true);
-      socketRef.current.emit('typing', { documentId, username: user.username });
+      socketRef.current?.emit('typing', { documentId, username: user.username });
     }
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
-      socketRef.current.emit('stop-typing', { documentId, username: user.username });
+      socketRef.current?.emit('stop-typing', { documentId, username: user.username });
       
       // Auto-save the working copy content back to database
       saveWorkingCopy(content);
